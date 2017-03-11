@@ -38,6 +38,43 @@ void Usage(char *argv[])
     printf("\t%s <mms_file>\n\n", argv[0]);
 }
 
+int Report(mms_message *msg)
+{
+    int i;
+    FILE *fp;
+
+    fp = fopen("./report.txt", "w");
+
+    fprintf(fp, "Versrion %s\n", msg->version);
+    if (msg->msg_type != NULL)
+        fprintf(fp, "Message type: %s\n", msg->msg_type);
+    if (msg->cont_type != NULL)
+        fprintf(fp, "Content type: %s\n", msg->cont_type);
+    if (msg->from != NULL)
+        fprintf(fp, "From: %s\n", msg->from);
+    if (msg->to != NULL)
+        fprintf(fp, "To: %s\n", msg->to);
+    if (msg->cc != NULL)
+        fprintf(fp, "CC: %s\n", msg->cc);
+    if (msg->bcc != NULL)
+        fprintf(fp, "Bcc: %s\n", msg->bcc);
+
+    if (msg->part != NULL) {
+        for (i=0; i!=msg->nparts; i++) {
+            fprintf(fp, "Part %i\n", i+1);
+            if (msg->part[i].ctype != NULL)
+                fprintf(fp, "  ctype: %s\n", msg->part[i].ctype);
+            if (msg->part[i].name != NULL)
+                fprintf(fp, "  name: %s\n", msg->part[i].name);
+            if (msg->part[i].path != NULL) {
+                fprintf(fp, "  path: %s\n", msg->part[i].path);
+                fprintf(fp, "  size: %i\n", msg->part[i].size);
+            }
+        }
+    }
+    fclose(fp);
+}
+
 int main(int argc, char *argv[])
 {
     int len;
@@ -57,6 +94,7 @@ int main(int argc, char *argv[])
         memset(&msg, 0, sizeof(mms_message));
         MMSDecode(&msg, mms_raw, len, "./");
         MMSPrint(&msg);
+        Report(&msg);
         MMSFree(&msg);
         fclose(fp);
     }

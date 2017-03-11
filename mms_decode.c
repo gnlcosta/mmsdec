@@ -40,6 +40,7 @@
 # define printf(...)
 #else
 # define LogPrintf(...)
+# define printf(...)
 #endif
 
 /*
