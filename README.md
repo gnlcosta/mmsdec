@@ -10,6 +10,12 @@ The steps to produce a binary executable are:
  - Clone git repository or untar source code: tar xzvf mmsdec-x.x.x.tgz
  - Entering in mmdec directory: cd mmsdec
  - Launch make: make
+ 
+# Usage
+If your mms message has name mms.raw then to decode it you have to exec:
+```
+./mmdec mms.raw
+```
 
 # License
 MMSDEC is released under GPLv2.
