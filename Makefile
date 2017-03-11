@@ -1,5 +1,5 @@
 all:
-	$(CC) -o mmsdec mmsdev.c mms_decode.c
+	$(CC) -o mmsdec mmsdec.c mms_decode.c
 
 clean:
 	rm -f *.o mmsdec *~ *.bin

@@ -46,29 +46,58 @@ int Report(mms_message *msg)
     fp = fopen("./report.txt", "w");
 
     fprintf(fp, "Versrion %s\n", msg->version);
-    if (msg->msg_type != NULL)
+    printf("Versrion %s\n", msg->version);
+    if (msg->msg_type != NULL) {
         fprintf(fp, "Message type: %s\n", msg->msg_type);
-    if (msg->cont_type != NULL)
+        printf("Message type: %s\n", msg->msg_type);
+    }
+    if (msg->cont_type != NULL) {
         fprintf(fp, "Content type: %s\n", msg->cont_type);
-    if (msg->from != NULL)
+        printf("Content type: %s\n", msg->cont_type);
+    }
+    if (msg->from != NULL) {
         fprintf(fp, "From: %s\n", msg->from);
-    if (msg->to != NULL)
+        printf("From: %s\n", msg->from);
+    }
+    if (msg->to != NULL) {
         fprintf(fp, "To: %s\n", msg->to);
-    if (msg->cc != NULL)
+        printf("To: %s\n", msg->to);
+    }
+    if (msg->cc != NULL) {
         fprintf(fp, "CC: %s\n", msg->cc);
-    if (msg->bcc != NULL)
+        printf("CC: %s\n", msg->cc);
+    }
+    if (msg->bcc != NULL) {
         fprintf(fp, "Bcc: %s\n", msg->bcc);
+        printf("Bcc: %s\n", msg->bcc);
+    }
 
     if (msg->part != NULL) {
         for (i=0; i!=msg->nparts; i++) {
             fprintf(fp, "Part %i\n", i+1);
-            if (msg->part[i].ctype != NULL)
+            printf("Part %i\n", i+1);
+            if (msg->part[i].ctype != NULL) {
                 fprintf(fp, "  ctype: %s\n", msg->part[i].ctype);
-            if (msg->part[i].name != NULL)
+                printf("  ctype: %s\n", msg->part[i].ctype);
+            }
+            if (msg->part[i].name != NULL && msg->part[i].path != NULL) {
                 fprintf(fp, "  name: %s\n", msg->part[i].name);
-            if (msg->part[i].path != NULL) {
-                fprintf(fp, "  path: %s\n", msg->part[i].path);
+                printf("  name: %s\n", msg->part[i].name);
                 fprintf(fp, "  size: %i\n", msg->part[i].size);
+                printf("  size: %i\n", msg->part[i].size);
+                rename(msg->part[i].path, msg->part[i].name);
+            }
+            else {
+                if (msg->part[i].name != NULL) {
+                    fprintf(fp, "  name: %s\n", msg->part[i].name);
+                    printf("  name: %s\n", msg->part[i].name);
+                }
+                if (msg->part[i].path != NULL) {
+                    fprintf(fp, "  path: %s\n", msg->part[i].path);
+                    printf("  path: %s\n", msg->part[i].path);
+                    fprintf(fp, "  size: %i\n", msg->part[i].size);
+                    printf("  size: %i\n", msg->part[i].size);
+                }
             }
         }
     }
@@ -93,7 +122,6 @@ int main(int argc, char *argv[])
         len = fread(mms_raw, 1, MMS_RAW_DIM, fp);
         memset(&msg, 0, sizeof(mms_message));
         MMSDecode(&msg, mms_raw, len, "./");
-        MMSPrint(&msg);
         Report(&msg);
         MMSFree(&msg);
         fclose(fp);
