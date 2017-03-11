@@ -5,7 +5,7 @@
  *
  * Xplico - Internet Traffic Decoder
  * By Gianluca Costa <g.costa@xplico.org>
- * Copyright 2007 Gianluca Costa & Andrea de Franceschi. Web: www.xplico.org
+ * Copyright 2007-2013 Gianluca Costa & Andrea de Franceschi. Web: www.xplico.org
  *
  *
  * This program is free software; you can redistribute it and/or
@@ -33,7 +33,8 @@
 
 
 void Usage(char *argv[])
-{
+{ 
+    printf("Version: %s\n", MMSDEC_VER);
     printf("Usage:\n");
     printf("\t%s <mms_file>\n\n", argv[0]);
 }
@@ -118,13 +119,18 @@ int main(int argc, char *argv[])
     }
 
     fp = fopen(file, "r");
+
+    printf("mmdec version %s\n", MMSDEC_VER);
     if (fp != NULL) {
+        printf("MMS contents and report:\n");
+        printf("\n---- START ----\n");
         len = fread(mms_raw, 1, MMS_RAW_DIM, fp);
         memset(&msg, 0, sizeof(mms_message));
         MMSDecode(&msg, mms_raw, len, "./");
         Report(&msg);
         MMSFree(&msg);
         fclose(fp);
+        printf("---- END ----\n\n");
     }
 
     return 0;
