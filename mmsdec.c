@@ -72,6 +72,10 @@ int Report(mms_message *msg)
         fprintf(fp, "Bcc: %s\n", msg->bcc);
         printf("Bcc: %s\n", msg->bcc);
     }
+    if (msg->subject != NULL) {
+        fprintf(fp, "Subject: %s\n", msg->subject);
+        printf("Subject: %s\n", msg->subject);
+    }
 
     if (msg->part != NULL) {
         for (i=0; i!=msg->nparts; i++) {

@@ -922,7 +922,7 @@ static int MMSHeader(mms_message *msg, const unsigned char *data, const int dim,
         case MM_SUBJECT_HDR:		/* Encoded-string-value	*/
             len = MMSEncString(data, dim, offset, &str);
             printf("MM_SUBJECT_HDR: %s\n", str);
-            free(str);
+            msg->subject = str;
             offset += len;
             break;
 
@@ -1160,6 +1160,8 @@ int MMSPrint(mms_message *msg)
         printf("CC: %s\n", msg->cc);
     if (msg->bcc != NULL)
         printf("Bcc: %s\n", msg->bcc);
+    if (msg->subject != NULL)
+        printf("Subject: %s\n", msg->bcc);
 
     if (msg->part != NULL) {
         for (i=0; i!=msg->nparts; i++) {
