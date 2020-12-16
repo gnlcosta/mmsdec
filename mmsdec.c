@@ -29,7 +29,7 @@
 
 #include "mms_decode.h"
 
-#define MMS_RAW_DIM  1024*500
+#define MMS_RAW_DIM  1024*5000
 
 
 void Usage(char *argv[])
