@@ -29,7 +29,7 @@
 
 #include "mms_decode.h"
 
-#define MMS_RAW_DIM  1024*500
+#define MMS_RAW_DIM  1024*5000
 
 
 void Usage(char *argv[])
@@ -71,6 +71,10 @@ int Report(mms_message *msg)
     if (msg->bcc != NULL) {
         fprintf(fp, "Bcc: %s\n", msg->bcc);
         printf("Bcc: %s\n", msg->bcc);
+    }
+    if (msg->subject != NULL) {
+        fprintf(fp, "Subject: %s\n", msg->subject);
+        printf("Subject: %s\n", msg->subject);
     }
 
     if (msg->part != NULL) {
@@ -126,7 +130,7 @@ int main(int argc, char *argv[])
         printf("\n---- START ----\n");
         len = fread(mms_raw, 1, MMS_RAW_DIM, fp);
         memset(&msg, 0, sizeof(mms_message));
-        MMSDecode(&msg, mms_raw, len, "./");
+        MMSDecode(&msg, mms_raw, len, ".");
         Report(&msg);
         MMSFree(&msg);
         fclose(fp);

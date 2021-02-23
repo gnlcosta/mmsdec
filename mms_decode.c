@@ -39,8 +39,10 @@
 # include "log.h"
 # define printf(...)
 #else
+#ifndef DEBUG_ON
 # define LogPrintf(...)
 # define printf(...)
+#endif
 #endif
 
 /*
@@ -173,6 +175,11 @@ typedef struct {
     unsigned short id;
     char *str;
 } value_string;
+
+typedef struct {
+    char *mime;
+    char *ext;
+} mime_type_ext;
 
 static const value_string vals_message_type[] = {
     /* MMS 1.0 */
@@ -431,6 +438,44 @@ static const value_string vals_content_types[] = {
 };
 
 
+static const mime_type_ext mime_type_ext_mapping[] = {
+    { "text/html", "html" },
+    { "text/plain", "txt" },
+    { "text/x-vCard", "vcf" },
+    { "text/vnd.wap.wml", "wml" },
+    { "text/vnd.wap.wmlscript", "wmls" },
+    { "image/gif", "gif" },
+    { "image/jpeg", "jpg" },
+    { "image/jpg", "jpg" },
+    { "image/tiff", "tiff" },
+    { "image/png", "png" },
+    { "image/vnd.wap.wbmp", "wbmp" },
+    { "application/xml", "xml" },
+    { "text/xml", "xml" },
+    { "application/vnd.wap.wbxml", "wbxml" },
+    { "application/xhtml+xml", "xhtml" },
+    { "text/css", "css" },
+    { "video/3gpp", "3gpp" },
+    { "video/mp4", "mp4" },
+    { "application/smil", "smil" },
+    { NULL, NULL }
+};
+
+
+static char *Mime2Ext(char** val, char *def)
+{
+    int i = 0;
+
+    while (mime_type_ext_mapping[i].mime != NULL && strcmp(mime_type_ext_mapping[i].mime, *val) != 0) {
+        i++;
+    }
+    if (mime_type_ext_mapping[i].ext == NULL)
+        return def;
+
+    return mime_type_ext_mapping[i].ext;
+}
+
+
 static char *Value2String(unsigned char val, const value_string *array, char *def)
 {
     int i = 0;
@@ -681,10 +726,10 @@ static int MMSHeader(mms_message *msg, const unsigned char *data, const int dim,
     strcpy(msg->version, "1.0");
     while (cont && offset < dim) {
         field = data[offset++];
-        //printf("0x%x\n", field);
+        printf("0x%x\n", field);
         if (!(field & 0x80)) {
             len = MMSString(data, dim, offset, &str);
-            printf("Unknow: %s\n", str);
+            printf("Unknown: %s\n", str);
             free(str);
             offset += len;
             continue;
@@ -922,7 +967,7 @@ static int MMSHeader(mms_message *msg, const unsigned char *data, const int dim,
         case MM_SUBJECT_HDR:		/* Encoded-string-value	*/
             len = MMSEncString(data, dim, offset, &str);
             printf("MM_SUBJECT_HDR: %s\n", str);
-            free(str);
+            msg->subject = str;
             offset += len;
             break;
 
@@ -1036,6 +1081,7 @@ static int MMsBody(mms_message *msg, const unsigned char *data, const int dim, i
     int nparts, i;
     int count;
     int header_len, data_len;
+    char ext[10] = "";
     unsigned int tmp;
     FILE *fp;
 
@@ -1067,7 +1113,11 @@ static int MMsBody(mms_message *msg, const unsigned char *data, const int dim, i
         MMSReadContentType(data, dim, offset, &tmp, &msg->part[i].ctype, &msg->part[i].name);
         printf("Ctype: %s\n", msg->part[i].ctype);
         msg->part[i].path = malloc(MMS_STR_DIM);
-        sprintf(msg->part[i].path, "%s/%lu_%p_%i.bin", tmp_path, time(NULL), msg->part[i].path, i);
+        if (msg->part[i].name == NULL) {
+            sprintf(msg->part[i].path, "%s/%lu_%i.%s", tmp_path, time(NULL), i, Mime2Ext((char**)&msg->part[i].ctype, "bin"));
+        } else {
+            sprintf(msg->part[i].path, "%s/%s", tmp_path, msg->part[i].name);
+        }
         fp = fopen(msg->part[i].path, "w");
         fwrite(data+offset+header_len, 1, data_len, fp);
         fclose(fp);
@@ -1139,10 +1189,6 @@ int MMSFree(mms_message *msg)
     return 0;
 }
 
-#ifdef printf
-# undef printf
-#endif
-
 int MMSPrint(mms_message *msg)
 {
     int i;
@@ -1160,6 +1206,8 @@ int MMSPrint(mms_message *msg)
         printf("CC: %s\n", msg->cc);
     if (msg->bcc != NULL)
         printf("Bcc: %s\n", msg->bcc);
+    if (msg->subject != NULL)
+        printf("Subject: %s\n", msg->bcc);
 
     if (msg->part != NULL) {
         for (i=0; i!=msg->nparts; i++) {

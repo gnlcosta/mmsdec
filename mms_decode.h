@@ -47,6 +47,7 @@ typedef struct {
     char *to;                            /* to */
     char *cc;                            /* cc */
     char *bcc;                           /* bcc */
+    char *subject;                       /* subject */
     short nparts;                        /* number of part */
     mms_part *part;                      /* parts */
 } mms_message;
