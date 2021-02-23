@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
         printf("\n---- START ----\n");
         len = fread(mms_raw, 1, MMS_RAW_DIM, fp);
         memset(&msg, 0, sizeof(mms_message));
-        MMSDecode(&msg, mms_raw, len, "./");
+        MMSDecode(&msg, mms_raw, len, ".");
         Report(&msg);
         MMSFree(&msg);
         fclose(fp);
