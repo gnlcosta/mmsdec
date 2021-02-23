@@ -7,9 +7,11 @@ mmdec has been tested on Linux systems.
 
 # Compile
 The steps to produce a binary executable are:
- - Clone git repository or untar source code: tar xzvf mmsdec-x.x.x.tgz
- - Entering in mmdec directory: cd mmsdec
- - Launch make: make
+ - Clone git repository or untar source code: `tar xzvf mmsdec-x.x.x.tgz`
+ - Entering in mmdec directory: `cd mmsdec`
+ - Launch make: `make`
+
+To compile with extra debug messages, run `make debug` instead of just `make`.
  
 # Usage
 If your mms message has name mms.raw then to decode it you have to exec:

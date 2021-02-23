@@ -39,8 +39,10 @@
 # include "log.h"
 # define printf(...)
 #else
+#ifndef DEBUG_ON
 # define LogPrintf(...)
 # define printf(...)
+#endif
 #endif
 
 /*
@@ -681,10 +683,10 @@ static int MMSHeader(mms_message *msg, const unsigned char *data, const int dim,
     strcpy(msg->version, "1.0");
     while (cont && offset < dim) {
         field = data[offset++];
-        //printf("0x%x\n", field);
+        printf("0x%x\n", field);
         if (!(field & 0x80)) {
             len = MMSString(data, dim, offset, &str);
-            printf("Unknow: %s\n", str);
+            printf("Unknown: %s\n", str);
             free(str);
             offset += len;
             continue;
@@ -1138,10 +1140,6 @@ int MMSFree(mms_message *msg)
 
     return 0;
 }
-
-#ifdef printf
-# undef printf
-#endif
 
 int MMSPrint(mms_message *msg)
 {
