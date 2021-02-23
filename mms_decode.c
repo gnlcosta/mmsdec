@@ -1069,7 +1069,11 @@ static int MMsBody(mms_message *msg, const unsigned char *data, const int dim, i
         MMSReadContentType(data, dim, offset, &tmp, &msg->part[i].ctype, &msg->part[i].name);
         printf("Ctype: %s\n", msg->part[i].ctype);
         msg->part[i].path = malloc(MMS_STR_DIM);
-        sprintf(msg->part[i].path, "%s/%lu_%p_%i.bin", tmp_path, time(NULL), msg->part[i].path, i);
+        if (msg->part[i].name == NULL) {
+            sprintf(msg->part[i].path, "%s/%lu_%i.%s", tmp_path, time(NULL), i);
+        } else {
+            sprintf(msg->part[i].path, "%s/%s", tmp_path, msg->part[i].name);
+        }
         fp = fopen(msg->part[i].path, "w");
         fwrite(data+offset+header_len, 1, data_len, fp);
         fclose(fp);
